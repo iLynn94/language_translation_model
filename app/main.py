@@ -2,9 +2,14 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from app.model.model import predict_pipeline
 from app.model.model import __version__ as model_version
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 
 app = FastAPI()
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 class TextIn(BaseModel):
@@ -17,7 +22,7 @@ class PredictionOut(BaseModel):
 
 @app.get("/")
 def home():
-    return {"health_check": "OK", "model_version": model_version}
+    return FileResponse('static/index.html')
 
 @app.get("/hello")
 def hello():
@@ -31,4 +36,4 @@ def predict(payload: TextIn):
 
 # docker build -t language-translation-model .
 
-# docker run -p 80:80 language-translation-model
+# docker run -p 8000:80 language-translation-model
